@@ -31,8 +31,8 @@ fun runMenu() {
         when(input) {
             1 -> addNote()
             2 -> listNotes()
-            3 -> println("Update a note")
-            4 -> println("Delete a note")
+            3 -> updateNote()
+            4 -> deleteNote()
             -1 -> println("Exiting App")
             else -> println("Invalid Option")
         }
@@ -60,4 +60,47 @@ fun addNote() {
 
 fun listNotes() {
     println(noteService.getNotes())
+}
+
+fun deleteNote() {
+    print("Enter ID to delete: ")
+    val id = readln().toInt()
+
+    if (noteService.deleteNote(id)) {
+        println("Deleted")
+    } else {
+        println("Note not found")
+    }
+}
+
+fun updateNote() {
+    print("Enter ID to update: ")
+    val id = readln().toInt()
+
+    print("Title: ")
+    val title = readlnOrNull() ?: ""
+
+    print("Body: ")
+    val body = readlnOrNull() ?: ""
+
+    print("Priority (1-5): ")
+    val priority = readlnOrNull()?.toIntOrNull() ?: 1
+
+    print("Category: ")
+    val category = readlnOrNull() ?: ""
+
+    print("Is archived (y/n): ")
+    val isArchived = when (readlnOrNull()?.lowercase()) {
+        "y", "yes", "true" -> true
+        else -> false
+    }
+
+    val updated = Note(id, title, body, priority, category, isArchived)
+
+    if (noteService.updateNote(id, updated)) {
+        println("Updated")
+    } else {
+        println("Note not found")
+    }
+
 }
