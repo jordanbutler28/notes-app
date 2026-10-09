@@ -142,4 +142,60 @@ class NoteServiceTest {
             assertTrue(populatedNoteService.getNotes().any { it.id == 3 })
         }
     }
+
+    @Nested
+    inner class UpdateNotes {
+
+        @Test
+        fun `update existing note returns true`() {
+            val updated = Note(1, "Updated Title", "Updated Body", 5, "Personal", true )
+            assertTrue(populatedNoteService.updateNote(1, updated))
+        }
+
+        @Test
+        fun `update non-existing note returns false`() {
+            val updated = Note(88, "Updated Title", "Updated Body", 5, "Personal", true )
+            assertFalse(populatedNoteService.updateNote(88, updated))
+        }
+
+        @Test
+        fun `update empty service returns false`() {
+            val updated = Note(1, "Updated Title", "Updated Body", 5, "Personal", true )
+            assertFalse(emptyNoteService.updateNote(1, updated))
+        }
+
+        @Test
+        fun `update existing note changes its stored values`() {
+            val updated = Note(1, "Updated Title", "Updated Body", 5, "Personal", true)
+
+            populatedNoteService.updateNote(1, updated)
+
+            val retrieved = populatedNoteService.getNotes()[1]
+
+            assertEquals("Updated Title", retrieved.title)
+            assertEquals("Updated Body", retrieved.body)
+            assertEquals(5, retrieved.priority)
+            assertEquals("Personal", retrieved.category)
+            assertTrue(retrieved.isArchived)
+        }
+
+        @Test
+        fun `update existing note does not change number of notes` () {
+            val sizeBefore = populatedNoteService.getNotes().size
+
+            val updated = Note(1, "Updated Title", "Updated Body", 5, "Personal", true)
+            populatedNoteService.updateNote(1, updated)
+
+            assertEquals(sizeBefore, populatedNoteService.getNotes().size)
+        }
+
+        @Test
+        fun `update existing note keeps its id` () {
+            val updated = Note(99, "Updated Title", "Updated Body", 5, "Work", false)
+
+            populatedNoteService.updateNote(1, updated)
+
+            assertEquals(1, populatedNoteService.getNotes()[1].id)
+        }
+    }
 }
