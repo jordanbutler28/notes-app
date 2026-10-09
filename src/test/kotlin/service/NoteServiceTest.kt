@@ -103,4 +103,43 @@ class NoteServiceTest {
             assertEquals(4, notes.size)
         }
     }
+
+    @Nested
+    inner class DeleteNotes {
+        @Test
+        fun `delete existing note returns true`() {
+            assertTrue(populatedNoteService.deleteNote(1))
+        }
+
+        @Test
+        fun `delete not existing note returns false`() {
+            assertFalse(populatedNoteService.deleteNote(5))
+        }
+
+        @Test
+        fun `delete from empty array returns false`() {
+            assertFalse(emptyNoteService.deleteNote(1))
+        }
+
+        @Test
+        fun `delete from populated note service reduces size of array by one`() {
+            val sizeBefore = populatedNoteService.getNotes().size
+            populatedNoteService.deleteNote(3)
+            assertEquals(sizeBefore - 1, populatedNoteService.getNotes().size)
+        }
+
+        @Test
+        fun `delete existing note removes correct note`() {
+            populatedNoteService.deleteNote(2)
+            assertFalse(populatedNoteService.getNotes().any { it.id == 2})
+        }
+
+        @Test
+        fun `delete one note does not remove other notes`(){
+            populatedNoteService.deleteNote(1)
+            assertTrue(populatedNoteService.getNotes().any { it.id == 0 })
+            assertTrue(populatedNoteService.getNotes().any { it.id == 2 })
+            assertTrue(populatedNoteService.getNotes().any { it.id == 3 })
+        }
+    }
 }
