@@ -74,19 +74,19 @@ class NoteServiceTest {
             emptyNoteService.addNote(note1)
             emptyNoteService.addNote(note2)
 
-            val retrievedNote1 = emptyNoteService.getNotes()[0]
-            val retrievedNote2 = emptyNoteService.getNotes()[1]
+            val retrievedNote1 = emptyNoteService.findNoteById(0)
+            val retrievedNote2 = emptyNoteService.findNoteById(0)
 
-            assertEquals(false, retrievedNote1.isArchived)
-            assertEquals(false, retrievedNote2.isArchived)
+            assertEquals(false, retrievedNote1?.isArchived)
+            assertEquals(false, retrievedNote2?.isArchived)
         }
 
         @Test
         fun `ensure ids remain unique after multiple inserts`() {
-            assertEquals(0, populatedNoteService.getNotes()[0].id)
-            assertEquals(1, populatedNoteService.getNotes()[1].id)
-            assertEquals(2, populatedNoteService.getNotes()[2].id)
-            assertEquals(3, populatedNoteService.getNotes()[3].id)
+            assertEquals(0, populatedNoteService.findNoteById(0)?.id)
+            assertEquals(1, populatedNoteService.findNoteById(1)?.id)
+            assertEquals(2, populatedNoteService.findNoteById(2)?.id)
+            assertEquals(3, populatedNoteService.findNoteById(3)?.id)
         }
     }
 
@@ -170,13 +170,13 @@ class NoteServiceTest {
 
             populatedNoteService.updateNote(1, updated)
 
-            val retrieved = populatedNoteService.getNotes()[1]
+            val retrieved = populatedNoteService.findNoteById(1)
 
-            assertEquals("Updated Title", retrieved.title)
-            assertEquals("Updated Body", retrieved.body)
-            assertEquals(5, retrieved.priority)
-            assertEquals("Personal", retrieved.category)
-            assertTrue(retrieved.isArchived)
+            assertEquals("Updated Title", retrieved?.title)
+            assertEquals("Updated Body", retrieved?.body)
+            assertEquals(5, retrieved?.priority)
+            assertEquals("Personal", retrieved?.category)
+            assertEquals(true,retrieved?.isArchived)
         }
 
         @Test
@@ -195,7 +195,7 @@ class NoteServiceTest {
 
             populatedNoteService.updateNote(1, updated)
 
-            assertEquals(1, populatedNoteService.getNotes()[1].id)
+            assertEquals(1, populatedNoteService.findNoteById(1)?.id)
         }
     }
 }
