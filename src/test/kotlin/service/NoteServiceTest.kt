@@ -16,6 +16,7 @@ class NoteServiceTest {
     private lateinit var note3: Note
     private lateinit var note4: Note
     private lateinit var note5: Note
+    private lateinit var note6: Note
 
     @BeforeEach
     fun setUp() {
@@ -26,6 +27,7 @@ class NoteServiceTest {
 
         //For use in tests
         note5 = Note(0, "Test5", "Body1", 1, "Extra", false)
+        note6 = Note(0, "Test6", "Body1", 2, "Extra", false)
 
         emptyNoteService = NoteService()
         populatedNoteService = NoteService()
@@ -197,5 +199,75 @@ class NoteServiceTest {
 
             assertEquals(1, populatedNoteService.findNoteById(1)?.id)
         }
+    }
+
+    @Nested
+    inner class CountingFunctions {
+
+        @Test
+        fun `empty list returns 0` () {
+            assertEquals(0, emptyNoteService.numberOfNotes())
+        }
+
+        @Test
+        fun `populated list returns correct count` () {
+            assertEquals(4, populatedNoteService.numberOfNotes())
+        }
+
+        @Test
+        fun `populated list returns correct active notes` () {
+            //new notes are added as active
+            assertEquals(4, populatedNoteService.numberOfActiveNotes())
+        }
+
+        @Test
+        fun `populated list returns correct archived notes` () {
+            assertTrue(populatedNoteService.archiveNote(2))
+            assertTrue(populatedNoteService.archiveNote(3))
+            assertEquals(2, populatedNoteService.numberOfArchivedNotes())
+        }
+
+        @Test
+        fun `numberOfActiveNotes returns zero when all notes are archived` () {
+            emptyNoteService.addNote(note1)
+            emptyNoteService.addNote(note2)
+            emptyNoteService.addNote(note3)
+
+            emptyNoteService.archiveNote(0)
+            emptyNoteService.archiveNote(1)
+            emptyNoteService.archiveNote(2)
+
+            assertEquals(0, emptyNoteService.numberOfActiveNotes())
+
+        }
+
+        @Test
+        fun `correctly counts notes with given category` () {
+            populatedNoteService.addNote(note5)
+            populatedNoteService.addNote(note6)
+            assertEquals(2, populatedNoteService.numberOfNotesByCategory("Extra"))
+        }
+
+        @Test
+        fun `no notes in category returns 0` () {
+            assertEquals(0, populatedNoteService.numberOfNotesByCategory("Christmas"))
+        }
+
+        @Test
+        fun `correctly counts notes with given priority` () {
+            assertEquals(1, populatedNoteService.numberOfNotesByPriority(4))
+        }
+
+        @Test
+        fun `multiple notes with same priority are all counted`() {
+            populatedNoteService.addNote(note5)
+            assertEquals(2, populatedNoteService.numberOfNotesByPriority(1))
+        }
+
+        @Test
+        fun `no notes with given priority returns 0` () {
+            assertEquals(0, populatedNoteService.numberOfNotesByPriority(99))
+        }
+
     }
 }

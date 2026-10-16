@@ -2,6 +2,10 @@
 
 A Console driven note creator written in Kotlin
 
+V2 Additions:
+1. Addition of more service layer functions e.g. findById, archiveNote, counting functions
+2. Testing on full CRUD capabilities and new service layer functions
+
 ## Features
 
 1. Main menu to process user input
