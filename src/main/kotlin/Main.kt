@@ -109,6 +109,7 @@ private val logger = KotlinLogging.logger {}
     }
 
     fun archiveNote () {
+        println(noteService.getActiveNotes().forEach { print(it) })
         print("Enter ID to archive: ")
         val id = readln().toInt()
 
