@@ -141,8 +141,13 @@ class NoteService(serializerType: Serializer) {
     }
 
     fun load() {
-        val array = serializer.read(Array<Note>::class.java)
-        notes = array.toCollection(ArrayList())
+        try {
+            val array = serializer.read(Array<Note>::class.java)
+            notes = array.toCollection(ArrayList())
+        } catch (e: Exception) {
+            System.err.println("Error reading file: ${e.message}. Starting with an empty list.")
+            notes = ArrayList()
+        }
     }
 
     fun store() {
