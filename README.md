@@ -2,16 +2,13 @@
 
 A Console driven note creator written in Kotlin
 
-V2 Additions:
-1. Addition of more service layer functions e.g. findById, archiveNote, counting functions
-2. Testing on full CRUD capabilities and new service layer functions
-
 ## Features
 
 1. Main menu to process user input
 2. Full CRUD support: add, list, update and delete notes
 4. Logging of app activity to console
 5. User-friendly output of notes
+6. Persistence to XML or JSON format
 
 ## Note Properties
 
@@ -24,15 +21,29 @@ V2 Additions:
 | `category`   | String  | Category the note belongs to  |
 | `isArchived` | Boolean | If note is archived           |
 
-## Menu Options
+## Main Menu Options
 
 | Option | Action          |
 |--------|-----------------|
 | 1      | Add a note      |
-| 2      | List all notes  |
+| 2      | List notes      |
 | 3      | Update a note   |
-| 4      | Delete a note   |
+| 4      | Archive a note  |
+| 5      | Delete a note   |
+| 6      | Save a note     |
 | 0      | Exit the app    |
+
+## List Menu Options
+
+| Option | Action              |
+|--------|---------------------|
+| 1      | List all notes      |
+| 2      | List active notes   |
+| 3      | List archived notes |
+| 4      | List by category    |
+| 5      | List by priority    |
+| 0      | Exit to main menu   |
+
 
 ## Getting Started
 
