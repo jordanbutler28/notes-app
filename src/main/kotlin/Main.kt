@@ -26,9 +26,10 @@ private val logger = KotlinLogging.logger {}
         > |   1) Add a note                |
         > |   2) List all notes            |
         > |   3) Update a note             |
-        > |   4) Delete a note             |
-        > |   5) Save notes                |
-        > |   6) Load notes                |
+        > |   4) Archive a note            |
+        > |   5) Delete a note             |
+        > |   6) Save notes                |
+        > |   7) Load notes                |
         > ----------------------------------
         > |   0) Exit                      |
         > ----------------------------------
@@ -44,9 +45,10 @@ private val logger = KotlinLogging.logger {}
                 1 -> addNote()
                 2 -> listNotes()
                 3 -> updateNote()
-                4 -> deleteNote()
-                5 -> save()
-                6 -> load()
+                4 -> archiveNote()
+                5 -> deleteNote()
+                6 -> save()
+                7 -> load()
                 0 -> println("Exiting App")
                 else -> println("Invalid Option")
             }
@@ -103,6 +105,17 @@ private val logger = KotlinLogging.logger {}
             println("Updated")
         } else {
             println("Note not found")
+        }
+    }
+
+    fun archiveNote () {
+        print("Enter ID to archive: ")
+        val id = readln().toInt()
+
+        if (noteService.archiveNote(id)) {
+            println("Archived Successfully")
+        } else {
+            println("Note cannot be archived. Invalid ID or note already archived.")
         }
     }
 
