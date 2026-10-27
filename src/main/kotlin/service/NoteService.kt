@@ -144,9 +144,12 @@ class NoteService(serializerType: Serializer) {
         try {
             val array = serializer.read(Array<Note>::class.java)
             notes = array.toCollection(ArrayList())
+            // find the max id in loaded notes and add 1. If null start at 0
+            lastId = notes.maxOfOrNull { it.id }?.plus(1) ?: 0
         } catch (e: Exception) {
             System.err.println("Error reading file: ${e.message}. Starting with an empty list.")
             notes = ArrayList()
+            lastId = 0
         }
     }
 

@@ -598,5 +598,37 @@ class NoteServiceTest {
             assertEquals(0, noteService.numberOfNotes())
         }
 
+        @Test
+        fun `loading existing JSON notes updates the next ID correctly to prevent duplicates`() {
+            val storingNotes = NoteService(JSONSerializer(File("notes.json")))
+            storingNotes.addNote(Note(0, "Title 1", "Body", 1, "Work", false))
+            storingNotes.addNote(Note(0, "Title 2", "Body", 2, "Home", false))
+            storingNotes.store()
+
+            val loadedNotes = NoteService(JSONSerializer(File("notes.json")))
+            loadedNotes.load()
+            loadedNotes.addNote(Note(0, "Title 3", "Body", 3, "College", false))
+
+            val latestNote = loadedNotes.findNoteById(2)
+            assertNotNull(latestNote, "The new note was not assigned ID 2. The ID counter likely reset to 0!")
+            assertEquals("Title 3", latestNote?.title)
+        }
+
+        @Test
+        fun `loading existing XML notes updates the next ID correctly to prevent duplicates`() {
+            val storingNotes = NoteService(XMLSerializer(File("notes.xml")))
+            storingNotes.addNote(Note(0, "Title 1", "Body", 1, "Work", false))
+            storingNotes.addNote(Note(0, "Title 2", "Body", 2, "Home", false))
+            storingNotes.store()
+
+            val loadedNotes = NoteService(XMLSerializer(File("notes.xml")))
+            loadedNotes.load()
+            loadedNotes.addNote(Note(0, "Title 3", "Body", 3, "College", false))
+
+            val latestNote = loadedNotes.findNoteById(2)
+            assertNotNull(latestNote, "The new note was not assigned ID 2. The ID counter likely reset to 0!")
+            assertEquals("Title 3", latestNote?.title)
+        }
+
         }
 }
