@@ -21,6 +21,19 @@ class NoteServiceTest {
     private lateinit var note5: Note
     private lateinit var note6: Note
 
+    @AfterEach
+    fun tearDown() {
+        // Clean up all possible test files to prevent state pollution between runs
+        val filesToDelete = listOf("notes.json", "empty-notes.json", "notes.xml", "empty-notes.xml", "missing.json", "missing.xml", "zero.json", "zero.xml")
+        for (fileName in filesToDelete) {
+            val file = File(fileName)
+            if (file.exists()) {
+                file.delete()
+            }
+        }
+        println("Test Completed and files cleaned up")
+    }
+
     @BeforeEach
     fun setUp() {
         note1 = Note(0, "Test1", "Body1", 1, "Work", false)
@@ -39,11 +52,6 @@ class NoteServiceTest {
         populatedNoteService.addNote(note2)
         populatedNoteService.addNote(note3)
         populatedNoteService.addNote(note4)
-    }
-
-    @AfterEach
-    fun tearDown() {
-        println("Test Completed")
     }
 
     @Nested
@@ -536,6 +544,90 @@ class NoteServiceTest {
             assertEquals(storingNotes.findNoteById(0), loadedNotes.findNoteById(0))
             assertEquals(storingNotes.findNoteById(1), loadedNotes.findNoteById(1))
             assertEquals(storingNotes.findNoteById(2), loadedNotes.findNoteById(2))
+        }
+
+        @Test
+        fun `loading from a non-existent file handles gracefully without crashing`() {
+            val noteService = NoteService(JSONSerializer(File("missing.json")))
+
+            // This should not throw a FileNotFoundException
+            noteService.load()
+
+            // It should just initialize with 0 notes
+            assertEquals(0, noteService.numberOfNotes())
+        }
+
+        @Test
+        fun `loading a zero-byte file handles gracefully and does not crash`() {
+            // Create an entirely empty file (0 bytes)
+            val emptyFile = File("zero.json")
+            emptyFile.createNewFile()
+
+            val noteService = NoteService(JSONSerializer(emptyFile))
+
+            // This should not throw an EOFException or JsonParseException
+            noteService.load()
+
+            // It should just initialize with 0 notes
+            assertEquals(0, noteService.numberOfNotes())
+        }
+
+        @Test
+        fun `loading from a non-existent XML file handles gracefully without crashing`() {
+            val noteService = NoteService(XMLSerializer(File("missing.xml")))
+
+            // This should not throw a FileNotFoundException
+            noteService.load()
+
+            // It should just initialize with 0 notes
+            assertEquals(0, noteService.numberOfNotes())
+        }
+
+        @Test
+        fun `loading a zero-byte XML file handles gracefully and does not crash`() {
+            // Create an entirely empty file
+            val emptyFile = File("zero.xml")
+            emptyFile.createNewFile()
+
+            val noteService = NoteService(XMLSerializer(emptyFile))
+
+            // This should not throw an EOFException or parsing exception
+            noteService.load()
+
+            // Confirm initialize with 0 notes
+            assertEquals(0, noteService.numberOfNotes())
+        }
+
+        @Test
+        fun `loading existing JSON notes updates the next ID correctly to prevent duplicates`() {
+            val storingNotes = NoteService(JSONSerializer(File("notes.json")))
+            storingNotes.addNote(Note(0, "Title 1", "Body", 1, "Work", false))
+            storingNotes.addNote(Note(0, "Title 2", "Body", 2, "Home", false))
+            storingNotes.store()
+
+            val loadedNotes = NoteService(JSONSerializer(File("notes.json")))
+            loadedNotes.load()
+            loadedNotes.addNote(Note(0, "Title 3", "Body", 3, "College", false))
+
+            val latestNote = loadedNotes.findNoteById(2)
+            assertNotNull(latestNote, "The new note was not assigned ID 2. The ID counter likely reset to 0!")
+            assertEquals("Title 3", latestNote?.title)
+        }
+
+        @Test
+        fun `loading existing XML notes updates the next ID correctly to prevent duplicates`() {
+            val storingNotes = NoteService(XMLSerializer(File("notes.xml")))
+            storingNotes.addNote(Note(0, "Title 1", "Body", 1, "Work", false))
+            storingNotes.addNote(Note(0, "Title 2", "Body", 2, "Home", false))
+            storingNotes.store()
+
+            val loadedNotes = NoteService(XMLSerializer(File("notes.xml")))
+            loadedNotes.load()
+            loadedNotes.addNote(Note(0, "Title 3", "Body", 3, "College", false))
+
+            val latestNote = loadedNotes.findNoteById(2)
+            assertNotNull(latestNote, "The new note was not assigned ID 2. The ID counter likely reset to 0!")
+            assertEquals("Title 3", latestNote?.title)
         }
 
         }
