@@ -24,7 +24,7 @@ private val logger = KotlinLogging.logger {}
         > ----------------------------------
         > | NOTE MENU                      |
         > |   1) Add a note                |
-        > |   2) List all notes            |
+        > |   2) List notes                |
         > |   3) Update a note             |
         > |   4) Archive a note            |
         > |   5) Delete a note             |
@@ -34,7 +34,25 @@ private val logger = KotlinLogging.logger {}
         > |   0) Exit                      |
         > ----------------------------------
         > """.trimMargin(">"))
-        return readNextInt("==>>")
+        return readNextInt("==>> ")
+    }
+
+    fun listMenu(): Int {
+        print("""
+        > ----------------------------------
+        > |        NOTE KEEPER APP         |
+        > ----------------------------------
+        > | LISTING MENU                   |
+        > |   1) List all notes            |
+        > |   2) List active notes         |
+        > |   3) List archived notes       |
+        > |   4) List by category          |
+        > |   5) List by priority          |
+        > ----------------------------------
+        > |   0) Exit to main menu         |
+        > ----------------------------------  
+        > """.trimMargin(">"))
+        return readNextInt("==>> ")
     }
 
     fun runMenu() {
@@ -43,7 +61,7 @@ private val logger = KotlinLogging.logger {}
             input = mainMenu()
             when(input) {
                 1 -> addNote()
-                2 -> listNotes()
+                2 -> runListMenu()
                 3 -> updateNote()
                 4 -> archiveNote()
                 5 -> deleteNote()
@@ -54,6 +72,22 @@ private val logger = KotlinLogging.logger {}
             }
         } while (input != 0)
         logger.info { "Notes App Exiting" }
+    }
+
+    fun runListMenu() {
+        var input : Int
+        do {
+            input = listMenu()
+            when(input) {
+                1 -> listAllNotes()
+                2 -> listActiveNotes()
+                3 -> listArchivedNotes()
+                4 -> listNotesOfCategory()
+                5 -> listNotesOfPriority()
+                0 -> runMenu()
+                else -> println("Invalid Option")
+            }
+        } while (input != 0)
     }
 
     fun addNote() {
@@ -71,8 +105,36 @@ private val logger = KotlinLogging.logger {}
         println("Note Added")
     }
 
-    fun listNotes() {
+    fun listAllNotes() {
+        val totalNotes = noteService.numberOfNotes()
+        println("Total Notes: $totalNotes")
         println(noteService.getNotes().forEach { print(it) })
+    }
+
+    fun listActiveNotes() {
+        val totalActiveNotes = noteService.numberOfActiveNotes()
+        println("Total Active: $totalActiveNotes")
+        println(noteService.getActiveNotes().forEach { print(it) })
+    }
+
+    fun listArchivedNotes() {
+        val totalArchivedNotes = noteService.numberOfArchivedNotes()
+        println("Total Archived: $totalArchivedNotes")
+        println(noteService.getArchivedNotes().forEach { print(it) })
+    }
+
+    fun listNotesOfCategory() {
+        val category = readNextLine("Search notes in category: ")
+        val matchedNotes = noteService.numberOfNotesByCategory(category)
+        println("Notes in $category: $matchedNotes")
+        println(noteService.getNotesByCategory(category))
+    }
+
+    fun listNotesOfPriority() {
+        val priority = readNextInt("Search notes by priority: ")
+        val matchedNotes = noteService.numberOfNotesByPriority(priority)
+        println("Notes with priority level $priority: $matchedNotes")
+        println(noteService.getNotesByPriority(priority))
     }
 
     fun deleteNote() {

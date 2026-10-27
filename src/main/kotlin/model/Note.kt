@@ -16,6 +16,6 @@ override fun toString(): String {
         priority: $priority
         category: $category
         isArchived: $isArchived
-    """.trimIndent()
+    """.trimIndent() + "\n"
     }
 }
