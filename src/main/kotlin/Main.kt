@@ -47,6 +47,7 @@ private val logger = KotlinLogging.logger {}
         > |   2) List active notes         |
         > |   3) List archived notes       |
         > |   4) List by category          |
+        > |   5) List by priority          |
         > ----------------------------------
         > |   0) Exit to main menu         |
         > ----------------------------------  
@@ -82,7 +83,7 @@ private val logger = KotlinLogging.logger {}
                 2 -> listActiveNotes()
                 3 -> listArchivedNotes()
                 4 -> listNotesOfCategory()
-                //5 -> listNotesOfPriority()
+                5 -> listNotesOfPriority()
                 0 -> runMenu()
                 else -> println("Invalid Option")
             }
@@ -130,7 +131,10 @@ private val logger = KotlinLogging.logger {}
     }
 
     fun listNotesOfPriority() {
-
+        val priority = readNextInt("Search notes by priority: ")
+        val matchedNotes = noteService.numberOfNotesByPriority(priority)
+        println("Notes with priority level $priority: $matchedNotes")
+        println(noteService.getNotesByPriority(priority))
     }
 
     fun deleteNote() {
