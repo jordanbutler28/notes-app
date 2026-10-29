@@ -31,16 +31,10 @@ class NoteService(serializerType: Serializer) {
         return result
     }
 
-    fun getArchivedNotes(): List<Note> {
-        val result = ArrayList<Note>()
-
-        for (note in notes) {
-            if (note.isArchived) {
-                result.add(note)
-            }
-        }
-        return result
-    }
+    fun getArchivedNotes(): List<Note> =
+        notes.stream()
+            .filter { it.isArchived }
+            .toList()
 
     fun getNotesByCategory(category: String): List<Note> {
         val result = ArrayList<Note>()
