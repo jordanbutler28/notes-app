@@ -449,14 +449,24 @@ class NoteServiceTest {
         }
 
         @Test
+        fun `numberOfArchivedNotes returns zero when no notes are archived`() {
+            //new notes are added as active
+            emptyNoteService.addNote(note1)
+            emptyNoteService.addNote(note2)
+            emptyNoteService.addNote(note3)
+
+            assertEquals(0, emptyNoteService.numberOfArchivedNotes())
+        }
+
+        @Test
         fun `numberOfActiveNotes returns zero when all notes are archived` () {
             emptyNoteService.addNote(note1)
             emptyNoteService.addNote(note2)
             emptyNoteService.addNote(note3)
 
-            emptyNoteService.archiveNote(0)
-            emptyNoteService.archiveNote(1)
-            emptyNoteService.archiveNote(2)
+            emptyNoteService.archiveNote(note1.id)
+            emptyNoteService.archiveNote(note2.id)
+            emptyNoteService.archiveNote(note3.id)
 
             assertEquals(0, emptyNoteService.numberOfActiveNotes())
 

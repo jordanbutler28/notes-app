@@ -97,47 +97,25 @@ class NoteService(serializerType: Serializer) {
     }
 
     fun numberOfArchivedNotes(): Int {
-        var count = 0
-
-        for (note in notes) {
-            if (note.isArchived) {
-                count++
-            }
-        }
-        return count
+       return notes.stream()
+           .filter { note : Note -> note.isArchived }
+           .count()
+           .toInt()
     }
 
     fun numberOfActiveNotes(): Int {
-        var count = 0
-
-        for (note in notes) {
-            if (!note.isArchived) {
-                count ++
-            }
-        }
-        return count
+        return notes.stream()
+            .filter { note: Note -> !note.isArchived }
+            .count()
+            .toInt()
     }
 
     fun numberOfNotesByCategory(category: String) : Int {
-        var count = 0
-
-        for (note in notes) {
-            if (note.category.equals(category, ignoreCase = true)) {
-                count++
-            }
-        }
-        return count
+        return notes.count { it.category.equals(category, ignoreCase = true) }
     }
 
     fun numberOfNotesByPriority(priority: Int) : Int {
-        var count = 0
-
-        for (note in notes) {
-            if (note.priority == priority) {
-                count++
-            }
-        }
-        return count
+        return notes.count { it.priority == priority }
     }
 
     fun load() {
