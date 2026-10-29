@@ -304,6 +304,36 @@ class NoteServiceTest {
     }
 
     @Nested
+    inner class SearchMethods {
+
+        @Test
+        fun `searchNotesByContent finds note with matching title` () {
+
+        }
+
+        @Test
+        fun `searchNotesByContent finds note with matching body` () {
+
+        }
+
+        @Test
+        fun `searchNotesByContent returns empty list when none match` () {
+
+        }
+
+        @Test
+        fun `searchNotesByContent finds multiple notes when multiple matches are found` () {
+
+        }
+
+        @Test
+        fun `searchNotesByContent is case insensitive` () {
+
+        }
+
+    }
+
+    @Nested
     inner class ArchiveNotes {
         @Test
         fun `archiving a note that does not exist returns false`(){

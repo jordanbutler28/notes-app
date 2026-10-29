@@ -25,11 +25,12 @@ private val logger = KotlinLogging.logger {}
         > | NOTE MENU                      |
         > |   1) Add a note                |
         > |   2) List notes                |
-        > |   3) Update a note             |
-        > |   4) Archive a note            |
-        > |   5) Delete a note             |
-        > |   6) Save notes                |
-        > |   7) Load notes                |
+        > |   3) Search notes              |
+        > |   4) Update a note             |
+        > |   5) Archive a note            |
+        > |   6) Delete a note             |
+        > |   7) Save notes                |
+        > |   8) Load notes                |
         > ----------------------------------
         > |   0) Exit                      |
         > ----------------------------------
@@ -61,11 +62,12 @@ private val logger = KotlinLogging.logger {}
             when(input) {
                 1 -> addNote()
                 2 -> runListMenu()
-                3 -> updateNote()
-                4 -> archiveNote()
-                5 -> deleteNote()
-                6 -> save()
-                7 -> load()
+                3 -> searchNotes()
+                4 -> updateNote()
+                5 -> archiveNote()
+                6 -> deleteNote()
+                7 -> save()
+                8 -> load()
                 0 -> println("Exiting App")
                 else -> println("Invalid Option")
             }
@@ -134,6 +136,15 @@ private val logger = KotlinLogging.logger {}
         val matchedNotes = noteService.numberOfNotesByPriority(priority)
         println("Notes with priority level $priority: $matchedNotes")
         println(noteService.getNotesByPriority(priority))
+    }
+
+    fun searchNotes() {
+        val foundNotes = noteService.searchNotesByContent(readNextLine("Search notes: "))
+        if (foundNotes.isNotEmpty()) {
+            println(foundNotes)
+        } else {
+            println("No notes found")
+        }
     }
 
     fun deleteNote() {

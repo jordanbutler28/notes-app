@@ -58,6 +58,11 @@ class NoteService(serializerType: Serializer) {
         return notes.find { it.id == id }
     }
 
+    fun searchNotesByContent(input: String): List<Note> =
+        notes.stream()
+            .filter { it.title.contains(input, ignoreCase = true) || it.body.contains(input, ignoreCase = true) }
+            .toList()
+
     fun archiveNote(id: Int): Boolean {
         val note = notes.find { it.id == id && !it.isArchived }
 
