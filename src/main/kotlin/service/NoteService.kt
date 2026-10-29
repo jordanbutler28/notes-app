@@ -86,13 +86,17 @@ class NoteService(serializerType: Serializer) {
             .toInt()
     }
 
-    fun numberOfNotesByCategory(category: String) : Int {
-        return notes.count { it.category.equals(category, ignoreCase = true) }
-    }
+    fun numberOfNotesByCategory(category: String): Int =
+        notes.stream()
+            .filter { it.category.equals(category, ignoreCase = true) }
+            .count()
+            .toInt()
 
-    fun numberOfNotesByPriority(priority: Int) : Int {
-        return notes.count { it.priority == priority }
-    }
+    fun numberOfNotesByPriority(priority: Int): Int =
+        notes.stream()
+            .filter { it.priority == priority }
+            .count()
+            .toInt()
 
     fun load() {
         try {
