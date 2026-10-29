@@ -20,49 +20,25 @@ class NoteService(serializerType: Serializer) {
         return notes
     }
 
-    fun getActiveNotes(): List<Note> {
-        val result = ArrayList<Note>()
+    fun getActiveNotes(): List<Note> =
+        notes.stream()
+            .filter { !it.isArchived }
+            .toList()
 
-        for (note in notes) {
-            if (!note.isArchived) {
-                result.add(note)
-            }
-        }
-        return result
-    }
+    fun getArchivedNotes(): List<Note> =
+        notes.stream()
+            .filter { it.isArchived }
+            .toList()
 
-    fun getArchivedNotes(): List<Note> {
-        val result = ArrayList<Note>()
+    fun getNotesByCategory(category: String): List<Note> =
+        notes.stream()
+            .filter { it.category.equals(category, ignoreCase = true) }
+            .toList()
 
-        for (note in notes) {
-            if (note.isArchived) {
-                result.add(note)
-            }
-        }
-        return result
-    }
-
-    fun getNotesByCategory(category: String): List<Note> {
-        val result = ArrayList<Note>()
-
-        for (note in notes) {
-            if (note.category.equals(category, ignoreCase = true)) {
-                result.add(note)
-            }
-        }
-        return result
-    }
-
-    fun getNotesByPriority(priority: Int): List<Note> {
-        val result = ArrayList<Note>()
-
-        for (note in notes) {
-            if (note.priority == priority) {
-                result.add(note)
-            }
-        }
-        return result
-    }
+    fun getNotesByPriority(priority: Int): List<Note> =
+        notes.stream()
+            .filter { it.priority == priority }
+            .toList()
 
     fun deleteNote(id: Int): Boolean {
         return notes.removeIf { it.id == id }
@@ -110,13 +86,17 @@ class NoteService(serializerType: Serializer) {
             .toInt()
     }
 
-    fun numberOfNotesByCategory(category: String) : Int {
-        return notes.count { it.category.equals(category, ignoreCase = true) }
-    }
+    fun numberOfNotesByCategory(category: String): Int =
+        notes.stream()
+            .filter { it.category.equals(category, ignoreCase = true) }
+            .count()
+            .toInt()
 
-    fun numberOfNotesByPriority(priority: Int) : Int {
-        return notes.count { it.priority == priority }
-    }
+    fun numberOfNotesByPriority(priority: Int): Int =
+        notes.stream()
+            .filter { it.priority == priority }
+            .count()
+            .toInt()
 
     fun load() {
         try {
