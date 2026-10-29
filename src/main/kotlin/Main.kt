@@ -56,9 +56,8 @@ private val logger = KotlinLogging.logger {}
     }
 
     fun runMenu() {
-        var input : Int
         do {
-            input = mainMenu()
+            val input = mainMenu()
             when(input) {
                 1 -> addNote()
                 2 -> runListMenu()
@@ -172,8 +171,7 @@ private val logger = KotlinLogging.logger {}
 
     fun archiveNote () {
         println(noteService.getActiveNotes().forEach { print(it) })
-        print("Enter ID to archive: ")
-        val id = readln().toInt()
+        val id = readNextInt("Enter ID of Note to be Archived: ")
 
         if (noteService.archiveNote(id)) {
             println("Archived Successfully")
