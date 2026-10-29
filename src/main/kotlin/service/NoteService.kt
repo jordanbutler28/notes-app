@@ -30,27 +30,15 @@ class NoteService(serializerType: Serializer) {
             .filter { it.isArchived }
             .toList()
 
-    fun getNotesByCategory(category: String): List<Note> {
-        val result = ArrayList<Note>()
+    fun getNotesByCategory(category: String): List<Note> =
+        notes.stream()
+            .filter { it.category.equals(category, ignoreCase = true) }
+            .toList()
 
-        for (note in notes) {
-            if (note.category.equals(category, ignoreCase = true)) {
-                result.add(note)
-            }
-        }
-        return result
-    }
-
-    fun getNotesByPriority(priority: Int): List<Note> {
-        val result = ArrayList<Note>()
-
-        for (note in notes) {
-            if (note.priority == priority) {
-                result.add(note)
-            }
-        }
-        return result
-    }
+    fun getNotesByPriority(priority: Int): List<Note> =
+        notes.stream()
+            .filter { it.priority == priority }
+            .toList()
 
     fun deleteNote(id: Int): Boolean {
         return notes.removeIf { it.id == id }
