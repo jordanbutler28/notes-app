@@ -304,6 +304,45 @@ class NoteServiceTest {
     }
 
     @Nested
+    inner class SearchMethods {
+
+        @Test
+        fun `searchNotesByContent finds note with matching title` () {
+            val result = populatedNoteService.searchNotesByContent("Test")
+            assertEquals(4, result.size)
+        }
+
+        @Test
+        fun `searchNotesByContent finds note with matching body` () {
+            val result = populatedNoteService.searchNotesByContent("Body")
+            assertEquals(4, result.size)
+        }
+
+        @Test
+        fun `searchNotesByContent returns empty list when none match` () {
+            val result = populatedNoteService.searchNotesByContent("none")
+            assertEquals(0, result.size )
+        }
+
+        @Test
+        fun `searchNotesByContent finds multiple notes when multiple matches are found` () {
+            emptyNoteService.addNote(Note(0 , "Chores", "Dishes", 2, "Home", false ))
+            emptyNoteService.addNote(Note(0 , "Dishes", "Chores", 2, "Home", false ))
+
+            val result = emptyNoteService.searchNotesByContent("Chores")
+            assertEquals(2, result.size)
+
+        }
+
+        @Test
+        fun `searchNotesByContent is case insensitive` () {
+            val result = populatedNoteService.searchNotesByContent("body")
+            assertEquals(4, result.size)
+        }
+
+    }
+
+    @Nested
     inner class ArchiveNotes {
         @Test
         fun `archiving a note that does not exist returns false`(){
