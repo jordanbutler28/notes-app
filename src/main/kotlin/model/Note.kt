@@ -1,9 +1,9 @@
 package model
 
-enum class Status {
-    TO_DO,
-    IN_PROGRESS,
-    DONE
+enum class Status(val display: String) {
+    TO_DO("To DO"),
+    IN_PROGRESS("In Progress"),
+    DONE("Done")
 }
 
 data class Note (
@@ -23,7 +23,7 @@ override fun toString(): String {
         Title: $title
         Body: $body
         Priority: $priority
-        Status: $status
+        Status: ${status.display}
         Category: $category
         Tags: ${tags.joinToString(", ")}
         Version: $version
