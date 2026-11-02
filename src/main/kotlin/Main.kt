@@ -141,6 +141,7 @@ private val logger = KotlinLogging.logger {}
     fun searchNotes() {
         val foundNotes = noteService.searchNotesByContent(readNextLine("Search notes: "))
         if (foundNotes.isNotEmpty()) {
+            println("${foundNotes.size} note(s) matched your search")
             println(foundNotes)
         } else {
             println("No notes found")
