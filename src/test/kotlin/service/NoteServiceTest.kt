@@ -255,7 +255,7 @@ class NoteServiceTest {
         fun `getNotesByCategory excludes notes whose categories do not match` () {
             assertEquals(4, populatedNoteService.numberOfNotes())
 
-            val result = populatedNoteService.getNotesByCategory("Work")
+            val result = populatedNoteService.getNotesByCategory("College")
             assertEquals(1, result.size)
 
             assertTrue(result.contains(note1))
@@ -427,7 +427,8 @@ class NoteServiceTest {
 
         @Test
         fun `update existing note changes its stored values`() {
-            val updated = Note(1, "Updated Title", "Updated Body", 5, category ="Personal", isArchived = true)
+            val tags = mutableListOf("tidy up", "bedroom")
+            val updated = Note(1, "Updated Title", "Updated Body", 5, Status.IN_PROGRESS,"Home", tags , 2.5, true)
 
             populatedNoteService.updateNote(1, updated)
 
@@ -436,8 +437,11 @@ class NoteServiceTest {
             assertEquals("Updated Title", retrieved?.title)
             assertEquals("Updated Body", retrieved?.body)
             assertEquals(5, retrieved?.priority)
-            assertEquals("Personal", retrieved?.category)
+            assertEquals("Home", retrieved?.category)
             assertEquals(true,retrieved?.isArchived)
+            assertEquals(Status.IN_PROGRESS, retrieved?.status)
+            assertEquals(tags, retrieved?.tags)
+            assertEquals(2.5, retrieved?.version)
         }
 
         @Test
@@ -514,7 +518,7 @@ class NoteServiceTest {
         fun `correctly counts notes with given category` () {
             populatedNoteService.addNote(note5)
             populatedNoteService.addNote(note6)
-            assertEquals(2, populatedNoteService.numberOfNotesByCategory("Extra"))
+            assertEquals(2, populatedNoteService.numberOfNotesByCategory("Work"))
         }
 
         @Test

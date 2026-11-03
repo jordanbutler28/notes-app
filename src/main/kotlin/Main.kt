@@ -101,7 +101,7 @@ private val logger = KotlinLogging.logger {}
         val category = readNextLine("Category:")
 
         noteService.addNote(
-            Note(0, title, body, priority, category, false)
+            Note(0, title, body, priority, category = category, isArchived = false)
         )
         println("Note Added")
     }
@@ -172,7 +172,7 @@ private val logger = KotlinLogging.logger {}
 
         val isArchived = readNextBoolean("Is archived (y/n): ")
 
-        val updated = Note(id, title, body, priority, category, isArchived)
+        val updated = Note(id, title, body, priority, category = category, isArchived =  isArchived)
 
         if (noteService.updateNote(id, updated)) {
             println("Updated")
