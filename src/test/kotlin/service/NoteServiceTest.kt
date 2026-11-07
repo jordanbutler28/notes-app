@@ -80,7 +80,10 @@ class NoteServiceTest {
             assertEquals(note1.title, retrievedNote.title)
             assertEquals(note1.body, retrievedNote.body)
             assertEquals(note1.priority, retrievedNote.priority)
+            assertEquals(note1.status, retrievedNote.status)
             assertEquals(note1.category, retrievedNote.category)
+            assertEquals(note1.tags, retrievedNote.tags)
+            assertEquals(note1.version, retrievedNote.version)
         }
 
         @Test
@@ -101,6 +104,28 @@ class NoteServiceTest {
             assertEquals(1, populatedNoteService.findNoteById(1)?.id)
             assertEquals(2, populatedNoteService.findNoteById(2)?.id)
             assertEquals(3, populatedNoteService.findNoteById(3)?.id)
+        }
+
+        @Test
+        fun `add note forces version to 1-0 and status to TO_DO`() {
+            // Create a note with wrong version and status
+            val badNote = Note(
+                title = "Rogue Note",
+                body = "Testing defaults",
+                priority = 1,
+                status = Status.DONE, // Should be overridden to TO_DO
+                category = "College",
+                tags = mutableListOf(),
+                version = 99.9,       // Should be overridden to 1.0
+                isArchived = false
+            )
+
+            emptyNoteService.addNote(badNote)
+
+            val retrievedNote = emptyNoteService.getNotes().first()
+
+            assertEquals(1.0, retrievedNote.version)
+            assertEquals(Status.TO_DO, retrievedNote.status)
         }
     }
 
@@ -428,7 +453,7 @@ class NoteServiceTest {
         @Test
         fun `update existing note changes its stored values`() {
             val tags = mutableListOf("tidy up", "bedroom")
-            val updated = Note(1, "Updated Title", "Updated Body", 5, Status.IN_PROGRESS,"Home", tags , 2.5, true)
+            val updated = Note(1, "Updated Title", "Updated Body", 5, Status.IN_PROGRESS,"Home", tags , isArchived = true)
 
             populatedNoteService.updateNote(1, updated)
 
@@ -441,7 +466,7 @@ class NoteServiceTest {
             assertEquals(true,retrieved?.isArchived)
             assertEquals(Status.IN_PROGRESS, retrieved?.status)
             assertEquals(tags, retrieved?.tags)
-            assertEquals(2.5, retrieved?.version)
+            assertEquals(1.1, retrieved?.version)
         }
 
         @Test

@@ -1,7 +1,7 @@
 package model
 
 enum class Status(val display: String) {
-    TO_DO("To DO"),
+    TO_DO("To Do"),
     IN_PROGRESS("In Progress"),
     DONE("Done")
 }

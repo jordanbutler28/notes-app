@@ -1,9 +1,11 @@
 import io.github.oshai.kotlinlogging.KotlinLogging
 import model.Note
+import model.Status
 import persistence.JSONSerializer
 import persistence.XMLSerializer
 import service.NoteService
 import utils.readNextBoolean
+import utils.readNextChar
 import utils.readNextInt
 import utils.readNextLine
 import java.io.File
@@ -100,8 +102,17 @@ private val logger = KotlinLogging.logger {}
 
         val category = readNextLine("Category:")
 
+        val tags = readNextLine("Tags (separate by comma): ")
+
+        //convert tags into mutable list
+        val tagsList = if (tags.isNotBlank()) {
+            tags.split(",").map { it.trim() }.toMutableList()
+        } else {
+            mutableListOf()
+        }
+
         noteService.addNote(
-            Note(0, title, body, priority, category = category, isArchived = false)
+            Note(0, title, body, priority, status = Status.TO_DO, category, tags = tagsList, version = 1.0, isArchived = false)
         )
         println("Note Added")
     }
@@ -168,11 +179,29 @@ private val logger = KotlinLogging.logger {}
 
         val priority = readNextInt("Priority (1-5): ")
 
+        val statusChar = readNextChar("Status (t = To Do, i = in progress, d = done): ")
+
         val category = readNextLine("Category: ")
+
+        val tags = readNextLine("Tags (comma separated): ")
 
         val isArchived = readNextBoolean("Is archived (y/n): ")
 
-        val updated = Note(id, title, body, priority, category = category, isArchived =  isArchived)
+        // Convert the status character to the Enum
+        val newStatus = when (statusChar.lowercaseChar()) {
+            't' -> Status.TO_DO
+            'i' -> Status.IN_PROGRESS
+            'd' -> Status.DONE
+            else -> Status.TO_DO
+        }
+
+        val tagsList = if (tags.isNotBlank()) {
+            tags.split(",").map { it.trim() }.toMutableList()
+        } else {
+            mutableListOf()
+        }
+
+        val updated = Note(id, title, body, priority, newStatus, category, tagsList, isArchived = isArchived)
 
         if (noteService.updateNote(id, updated)) {
             println("Updated")

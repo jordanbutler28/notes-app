@@ -1,6 +1,7 @@
 package service
 
 import model.Note
+import model.Status
 import persistence.Serializer
 import kotlin.text.category
 
@@ -14,6 +15,8 @@ class NoteService(serializerType: Serializer) {
     fun addNote(note: Note) {
         note.id = getId()
         note.isArchived = false
+        note.version = 1.0
+        note.status = Status.TO_DO
         notes.add(note)
     }
 
@@ -36,7 +39,9 @@ class NoteService(serializerType: Serializer) {
     fun updateNote(id: Int, updated: Note): Boolean {
         val index = notes.indexOfFirst { it.id == id }
         if (index != -1) {
+            val oldNote = notes[index]
             updated.id = id
+            updated.version = kotlin.math.round((oldNote.version + 0.1) * 10.0) / 10.0
             notes[index] = updated
             return true
         }
