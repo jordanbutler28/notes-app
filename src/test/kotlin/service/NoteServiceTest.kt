@@ -3,6 +3,7 @@ package service
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 import model.Note
+import model.Status
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -36,14 +37,14 @@ class NoteServiceTest {
 
     @BeforeEach
     fun setUp() {
-        note1 = Note(0, "Test1", "Body1", 1, "Work", false)
-        note2 = Note(0, "Test2", "Body2", 2, "Home", true)
-        note3 = Note(0, "Test3", "Body3", 3, "College", false)
-        note4 = Note(0, "Test4", "Body4", 4, "Social", true)
+        note1 = Note(0, "Test1", "Body1", 1, Status.TO_DO, "College", mutableListOf("kotlin", "assignment", "github"), 1.0, false)
+        note2 = Note(0, "Test2", "Body2", 2, Status.TO_DO,"Home", mutableListOf("house-keeping"), 1.3, true)
+        note3 = Note(0, "Test3", "Body3", 3, Status.IN_PROGRESS,"Hobbies", mutableListOf("fun", "relaxing"), 2.1,false)
+        note4 = Note(0, "Test4", "Body4", 4, Status.DONE, "Shopping", mutableListOf("groceries", "dinner", "lunch"), 1.9,true)
 
         //For use in tests
-        note5 = Note(0, "Test5", "Body1", 1, "Extra", false)
-        note6 = Note(0, "Test6", "Body1", 2, "Extra", false)
+        note5 = Note(0, "Test5", "Body5", 1, Status.IN_PROGRESS,"Work", mutableListOf("time"), 1.9, false)
+        note6 = Note(0, "Test6", "Body6", 2, Status.DONE, "Work", mutableListOf(), 2.9, false)
 
         emptyNoteService = NoteService(JSONSerializer(File("notes.json")))
         populatedNoteService = NoteService(JSONSerializer(File("empty-notes.json")))
@@ -79,7 +80,10 @@ class NoteServiceTest {
             assertEquals(note1.title, retrievedNote.title)
             assertEquals(note1.body, retrievedNote.body)
             assertEquals(note1.priority, retrievedNote.priority)
+            assertEquals(note1.status, retrievedNote.status)
             assertEquals(note1.category, retrievedNote.category)
+            assertEquals(note1.tags, retrievedNote.tags)
+            assertEquals(note1.version, retrievedNote.version)
         }
 
         @Test
@@ -100,6 +104,28 @@ class NoteServiceTest {
             assertEquals(1, populatedNoteService.findNoteById(1)?.id)
             assertEquals(2, populatedNoteService.findNoteById(2)?.id)
             assertEquals(3, populatedNoteService.findNoteById(3)?.id)
+        }
+
+        @Test
+        fun `add note forces version to 1-0 and status to TO_DO`() {
+            // Create a note with wrong version and status
+            val badNote = Note(
+                title = "Rogue Note",
+                body = "Testing defaults",
+                priority = 1,
+                status = Status.DONE, // Should be overridden to TO_DO
+                category = "College",
+                tags = mutableListOf(),
+                version = 99.9,       // Should be overridden to 1.0
+                isArchived = false
+            )
+
+            emptyNoteService.addNote(badNote)
+
+            val retrievedNote = emptyNoteService.getNotes().first()
+
+            assertEquals(1.0, retrievedNote.version)
+            assertEquals(Status.TO_DO, retrievedNote.status)
         }
     }
 
@@ -227,14 +253,13 @@ class NoteServiceTest {
 
         @Test
         fun `getNotesByCategory returns all matching notes when all match` () {
-            emptyNoteService.addNote(Note(0, "A", "Body A", 1, "Work", false))
-            emptyNoteService.addNote(Note(0, "B", "Body B", 2, "Work", false))
-            emptyNoteService.addNote(Note(0, "C", "Body C", 3, "Work", false))
+            emptyNoteService.addNote(note5)
+            emptyNoteService.addNote(note6)
 
-            assertEquals(3, emptyNoteService.numberOfNotes())
+            assertEquals(2, emptyNoteService.numberOfNotes())
             val result = emptyNoteService.getNotesByCategory("Work")
 
-            assertEquals(3, result.size)
+            assertEquals(2, result.size)
             assertTrue(result.all { it.category == "Work" })
         }
 
@@ -255,7 +280,7 @@ class NoteServiceTest {
         fun `getNotesByCategory excludes notes whose categories do not match` () {
             assertEquals(4, populatedNoteService.numberOfNotes())
 
-            val result = populatedNoteService.getNotesByCategory("Work")
+            val result = populatedNoteService.getNotesByCategory("College")
             assertEquals(1, result.size)
 
             assertTrue(result.contains(note1))
@@ -272,11 +297,10 @@ class NoteServiceTest {
 
         @Test
         fun `getNotesByPriority returns all matching notes when all match` () {
-            emptyNoteService.addNote(Note(0, "Test", "Body1", 5, "Extra", false) )
-            emptyNoteService.addNote(Note(0, "Test", "Body1", 5, "Extra", false) )
+            emptyNoteService.addNote(Note(0, "Test", "Body1", 5, category ="Work"))
+            emptyNoteService.addNote(Note(0, "Test", "Body1", 5, category = "Work"))
 
             assertEquals(2, emptyNoteService.numberOfNotes())
-            println("Empty note service ${emptyNoteService.getNotes()}")
             val result = emptyNoteService.getNotesByPriority(5)
             assertEquals(2, result.size)
             assertTrue(result.all { it.priority == 5})
@@ -326,8 +350,8 @@ class NoteServiceTest {
 
         @Test
         fun `searchNotesByContent finds multiple notes when multiple matches are found` () {
-            emptyNoteService.addNote(Note(0 , "Chores", "Dishes", 2, "Home", false ))
-            emptyNoteService.addNote(Note(0 , "Dishes", "Chores", 2, "Home", false ))
+            emptyNoteService.addNote(Note(0 , "Chores", "Dishes", 2 ))
+            emptyNoteService.addNote(Note(0 , "Dishes", "Chores", 2 ))
 
             val result = emptyNoteService.searchNotesByContent("Chores")
             assertEquals(2, result.size)
@@ -410,25 +434,26 @@ class NoteServiceTest {
 
         @Test
         fun `update existing note returns true`() {
-            val updated = Note(1, "Updated Title", "Updated Body", 5, "Personal", true )
+            val updated = Note(1, "Updated Title", "Updated Body", 5, category ="Personal", isArchived = true )
             assertTrue(populatedNoteService.updateNote(1, updated))
         }
 
         @Test
         fun `update non-existing note returns false`() {
-            val updated = Note(88, "Updated Title", "Updated Body", 5, "Personal", true )
+            val updated = Note(88, "Updated Title", "Updated Body", 5, category ="Personal", isArchived = true )
             assertFalse(populatedNoteService.updateNote(88, updated))
         }
 
         @Test
         fun `update empty service returns false`() {
-            val updated = Note(1, "Updated Title", "Updated Body", 5, "Personal", true )
+            val updated = Note(1, "Updated Title", "Updated Body", 5, category ="Personal", isArchived = true )
             assertFalse(emptyNoteService.updateNote(1, updated))
         }
 
         @Test
         fun `update existing note changes its stored values`() {
-            val updated = Note(1, "Updated Title", "Updated Body", 5, "Personal", true)
+            val tags = mutableListOf("tidy up", "bedroom")
+            val updated = Note(1, "Updated Title", "Updated Body", 5, Status.IN_PROGRESS,"Home", tags , isArchived = true)
 
             populatedNoteService.updateNote(1, updated)
 
@@ -437,15 +462,18 @@ class NoteServiceTest {
             assertEquals("Updated Title", retrieved?.title)
             assertEquals("Updated Body", retrieved?.body)
             assertEquals(5, retrieved?.priority)
-            assertEquals("Personal", retrieved?.category)
+            assertEquals("Home", retrieved?.category)
             assertEquals(true,retrieved?.isArchived)
+            assertEquals(Status.IN_PROGRESS, retrieved?.status)
+            assertEquals(tags, retrieved?.tags)
+            assertEquals(1.1, retrieved?.version)
         }
 
         @Test
         fun `update existing note does not change number of notes` () {
             val sizeBefore = populatedNoteService.getNotes().size
 
-            val updated = Note(1, "Updated Title", "Updated Body", 5, "Personal", true)
+            val updated = Note(1, "Updated Title", "Updated Body", 5, category ="Personal", isArchived = true)
             populatedNoteService.updateNote(1, updated)
 
             assertEquals(sizeBefore, populatedNoteService.getNotes().size)
@@ -453,7 +481,7 @@ class NoteServiceTest {
 
         @Test
         fun `update existing note keeps its id` () {
-            val updated = Note(99, "Updated Title", "Updated Body", 5, "Work", false)
+            val updated = Note(99, "Updated Title", "Updated Body", 5, category = "Work", isArchived = false)
 
             populatedNoteService.updateNote(1, updated)
 
@@ -515,7 +543,7 @@ class NoteServiceTest {
         fun `correctly counts notes with given category` () {
             populatedNoteService.addNote(note5)
             populatedNoteService.addNote(note6)
-            assertEquals(2, populatedNoteService.numberOfNotesByCategory("Extra"))
+            assertEquals(2, populatedNoteService.numberOfNotesByCategory("Work"))
         }
 
         @Test
@@ -674,13 +702,13 @@ class NoteServiceTest {
         @Test
         fun `loading existing JSON notes updates the next ID correctly to prevent duplicates`() {
             val storingNotes = NoteService(JSONSerializer(File("notes.json")))
-            storingNotes.addNote(Note(0, "Title 1", "Body", 1, "Work", false))
-            storingNotes.addNote(Note(0, "Title 2", "Body", 2, "Home", false))
+            storingNotes.addNote(Note(0, "Title 1", "Body", 1, category = "Work", isArchived = false))
+            storingNotes.addNote(Note(0, "Title 2", "Body", 2, category = "Home", isArchived = false))
             storingNotes.store()
 
             val loadedNotes = NoteService(JSONSerializer(File("notes.json")))
             loadedNotes.load()
-            loadedNotes.addNote(Note(0, "Title 3", "Body", 3, "College", false))
+            loadedNotes.addNote(Note(0, "Title 3", "Body", 3, category = "College", isArchived = false))
 
             val latestNote = loadedNotes.findNoteById(2)
             assertNotNull(latestNote, "The new note was not assigned ID 2. The ID counter likely reset to 0!")
@@ -690,13 +718,13 @@ class NoteServiceTest {
         @Test
         fun `loading existing XML notes updates the next ID correctly to prevent duplicates`() {
             val storingNotes = NoteService(XMLSerializer(File("notes.xml")))
-            storingNotes.addNote(Note(0, "Title 1", "Body", 1, "Work", false))
-            storingNotes.addNote(Note(0, "Title 2", "Body", 2, "Home", false))
+            storingNotes.addNote(Note(0, "Title 1", "Body", 1, category = "Work", isArchived = false))
+            storingNotes.addNote(Note(0, "Title 2", "Body", 2, category = "Home", isArchived = false))
             storingNotes.store()
 
             val loadedNotes = NoteService(XMLSerializer(File("notes.xml")))
             loadedNotes.load()
-            loadedNotes.addNote(Note(0, "Title 3", "Body", 3, "College", false))
+            loadedNotes.addNote(Note(0, "Title 3", "Body", 3, category = "College", isArchived = false))
 
             val latestNote = loadedNotes.findNoteById(2)
             assertNotNull(latestNote, "The new note was not assigned ID 2. The ID counter likely reset to 0!")
