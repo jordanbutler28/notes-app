@@ -8,6 +8,7 @@ import utils.readNextBoolean
 import utils.readNextChar
 import utils.readNextInt
 import utils.readNextLine
+import utils.readValidPriority
 import java.io.File
 
 //val noteService = NoteService(XMLSerializer(File("notes.xml")))
@@ -98,7 +99,7 @@ private val logger = KotlinLogging.logger {}
 
         val body = readNextLine("Body:")
 
-        val priority = readNextInt("Priority (1-5):")
+        val priority = readValidPriority("Priority (1-5):")
 
         val category = readNextLine("Category:")
 
@@ -177,7 +178,7 @@ private val logger = KotlinLogging.logger {}
 
         val body = readNextLine("Body: ")
 
-        val priority = readNextInt("Priority (1-5): ")
+        val priority = readValidPriority("Priority (1-5): ")
 
         val statusChar = readNextChar("Status (t = To Do, i = in progress, d = done): ")
 
