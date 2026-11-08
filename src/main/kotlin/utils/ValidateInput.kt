@@ -27,27 +27,25 @@ fun readValidCategory(prompt: String) : String {
     } while (true)
 }
 
-fun readValidStatus(prompt: String) : Status {
+fun readValidStatus(prompt: String): Status {
     var input = readNextChar(prompt)
     do {
-        when (input.lowercaseChar()) {
-            't' -> return Status.TO_DO
-            'i' -> return Status.IN_PROGRESS
-            'd' -> return Status.DONE
-            else -> {
-                println("Invalid status. You gave $input")
-                println("Status options are: 't' (To Do), 'i' (In Progress), or 'd' (Done). Please try again.")
-                input = readNextChar(prompt)
+        if (isValidStatus(input)) {
+            return when (input.lowercaseChar()) {
+                't' -> Status.TO_DO
+                'i' -> Status.IN_PROGRESS
+                'd' -> Status.DONE
+                else -> Status.TO_DO
             }
+        } else {
+            println("Invalid status. You gave $input")
+            println("Status options are: 't' (To Do), 'i' (In Progress), or 'd' (Done). Please try again.")
+            input = readNextChar(prompt)
         }
     } while (true)
 }
 
 fun readValidTags(prompt: String) : MutableList<String> {
-    var input = readNextLine(prompt)
-    return if (input.isNotBlank()) {
-        input.split(",").map { it.trim() }.toMutableList()
-    } else {
-        mutableListOf()
-    }
+    val input = readNextLine(prompt)
+    return parseTags(input)
 }
