@@ -10,6 +10,8 @@ import utils.readNextInt
 import utils.readNextLine
 import utils.readValidCategory
 import utils.readValidPriority
+import utils.readValidStatus
+import utils.readValidTags
 import java.io.File
 
 //val noteService = NoteService(XMLSerializer(File("notes.xml")))
@@ -104,14 +106,7 @@ private val logger = KotlinLogging.logger {}
 
         val category = readValidCategory("Category:")
 
-        val tags = readNextLine("Tags (separate by comma): ")
-
-        //convert tags into mutable list
-        val tagsList = if (tags.isNotBlank()) {
-            tags.split(",").map { it.trim() }.toMutableList()
-        } else {
-            mutableListOf()
-        }
+        val tagsList = readValidTags("Tags (separate by comma): ")
 
         noteService.addNote(
             Note(0, title, body, priority, status = Status.TO_DO, category, tags = tagsList, version = 1.0, isArchived = false)
@@ -181,27 +176,13 @@ private val logger = KotlinLogging.logger {}
 
         val priority = readValidPriority("Priority (1-5): ")
 
-        val statusChar = readNextChar("Status (t = To Do, i = in progress, d = done): ")
+        val newStatus = readValidStatus("Status (t = To Do, i = in progress, d = done): ")
 
         val category = readValidCategory("Category: ")
 
-        val tags = readNextLine("Tags (comma separated): ")
+        val tagsList = readValidTags("Tags (comma separated): ")
 
         val isArchived = readNextBoolean("Is archived (y/n): ")
-
-        // Convert the status character to the Enum
-        val newStatus = when (statusChar.lowercaseChar()) {
-            't' -> Status.TO_DO
-            'i' -> Status.IN_PROGRESS
-            'd' -> Status.DONE
-            else -> Status.TO_DO
-        }
-
-        val tagsList = if (tags.isNotBlank()) {
-            tags.split(",").map { it.trim() }.toMutableList()
-        } else {
-            mutableListOf()
-        }
 
         val updated = Note(id, title, body, priority, newStatus, category, tagsList, isArchived = isArchived)
 
