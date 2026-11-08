@@ -8,6 +8,7 @@ import utils.readNextBoolean
 import utils.readNextChar
 import utils.readNextInt
 import utils.readNextLine
+import utils.readValidCategory
 import utils.readValidPriority
 import java.io.File
 
@@ -101,7 +102,7 @@ private val logger = KotlinLogging.logger {}
 
         val priority = readValidPriority("Priority (1-5):")
 
-        val category = readNextLine("Category:")
+        val category = readValidCategory("Category:")
 
         val tags = readNextLine("Tags (separate by comma): ")
 
@@ -182,7 +183,7 @@ private val logger = KotlinLogging.logger {}
 
         val statusChar = readNextChar("Status (t = To Do, i = in progress, d = done): ")
 
-        val category = readNextLine("Category: ")
+        val category = readValidCategory("Category: ")
 
         val tags = readNextLine("Tags (comma separated): ")
 
