@@ -11,3 +11,16 @@ fun readValidPriority(prompt : String): Int {
         }
     } while (true)
 }
+
+fun readValidCategory(prompt: String) : String {
+    var input = readNextLine(prompt)
+    do {
+        if (isValidCategory(input))
+            return input
+        else {
+        println("Category not available.  You gave $input")
+        println("Category options are: Home, College, Hobbies, Shopping and Work. Please try again.")
+        input = readNextLine(prompt)
+        }
+    } while (true)
+}
