@@ -9,17 +9,21 @@ A Console driven note creator written in Kotlin
 4. Logging of app activity to console
 5. User-friendly output of notes
 6. Persistence to XML or JSON format
+7. Auto versioning of notes
 
 ## Note Properties
 
-| Field        | Type    | Description                   |
-|--------------|---------|-------------------------------|
-| `id`         | Int     | Unique identifier             |
-| `title`      | String  | Short title of the note       |
-| `body`       | String  | Main content of the note      |
-| `priority`   | Int     | Priority level of the note    |
-| `category`   | String  | Category the note belongs to  |
-| `isArchived` | Boolean | If note is archived           |
+| Field        | Type                | Description                  |
+|--------------|---------------------|------------------------------|
+| `id`         | Int                 | Unique identifier            |
+| `title`      | String              | Short title of the note      |
+| `body`       | String              | Main content of the note     |
+| `priority`   | Int                 | Priority level of the note   |
+| `status`     | Enum                | To Do, In Progress or Done   |
+| `category`   | String              | Category the note belongs to |
+| `tags`       | MutableList<String> | Tags relevant to note        |
+| `version`    | Double              | Auto versioning              |
+| `isArchived` | Boolean             | If note is archived          |
 
 ## Main Menu Options
 
@@ -44,6 +48,20 @@ A Console driven note creator written in Kotlin
 | 5      | List by priority    |
 | 0      | Exit to main menu   |
 
+## Example Output
+
+```
+#0
+Title: Kotlin Assignment
+Body: Create tests for new features
+Priority: 5
+Status: To Do
+Category: College
+Tags: kotlin, assignment, github
+Version: 1.0
+Archive status: false
+```
+
 
 ## Getting Started
 
@@ -61,17 +79,6 @@ cd notes-app
 ```
 
 Or open the project in IntelliJ IDEA and run `main()`.
-
-## Example Output
-
-```
-#1
-title: Shopping
-body: Buy milk and eggs
-priority: 2
-category: Personal
-isArchived: false
-```
 
 ## Author
 
