@@ -1,6 +1,7 @@
 package service
 
 import model.Item
+import model.Note
 
 class ItemService {
     private var items = ArrayList<Item>()
@@ -20,4 +21,7 @@ class ItemService {
     fun findItemById(id: Int): Item? {
         return items.find { it.id == id }
     }
+
+    fun searchItemsByContent(input: String): List<Item> = items.filter { it.description.contains(input, ignoreCase = true) }
+
 }

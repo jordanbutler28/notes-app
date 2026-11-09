@@ -44,6 +44,7 @@ private val logger = KotlinLogging.logger {}
         > | ITEM MENU                      |
         > |   10) Add item                 |
         > |   11) List all items           |
+        > |   12) Search items             |
         > ----------------------------------    
         > |   0) Exit                      |
         > ----------------------------------
@@ -83,6 +84,7 @@ private val logger = KotlinLogging.logger {}
                 8 -> load()
                 10 -> addItem()
                 11 -> listAllItems()
+                12 -> searchItems()
                 0 -> println("Exiting App")
                 else -> println("Invalid Option")
             }
@@ -224,6 +226,18 @@ private val logger = KotlinLogging.logger {}
     fun listAllItems() {
         itemService.getItems().forEach { print(it) }
     }
+
+    fun searchItems() {
+        val foundItems = itemService.searchItemsByContent(readNextLine("Search items for: "))
+        if (foundItems.isNotEmpty()) {
+            println("${foundItems.size} item(s) matched your search")
+            println(foundItems)
+        } else {
+            println("No items found")
+        }
+    }
+
+//persistence
 
     fun save () {
         try {
