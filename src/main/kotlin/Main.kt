@@ -36,19 +36,20 @@ private val logger = KotlinLogging.logger {}
         > | NOTE MENU                      |
         > |   1) Add a note                |
         > |   2) Add item to note          |
-        > |   3) List notes                |
-        > |   4) Search notes              |
-        > |   5) Update a note             |
-        > |   6) Archive a note            |
-        > |   7) Delete a note             |
-        > |   8) Save notes                |
-        > |   9) Load notes                |
+        > |   3) View Note items           |
+        > |   4) List notes                |
+        > |   5) Search notes              |
+        > |   6) Update a note             |
+        > |   7) Archive a note            |
+        > |   8) Delete a note             |
+        > |   9) Save notes                |
+        > |   10) Load notes                |
         > ----------------------------------
         > | ITEM MENU                      |
-        > |   10) Add item                 |
-        > |   11) List all items           |
-        > |   12) Item Report              |
-        > |   13) Search items             |
+        > |   11) Add item                 |
+        > |   12) List all items           |
+        > |   13) Item Report              |
+        > |   14) Search items             |
         > ----------------------------------    
         > |   0) Exit                      |
         > ----------------------------------
@@ -80,17 +81,18 @@ private val logger = KotlinLogging.logger {}
             when(input) {
                 1 -> addNote()
                 2 -> addItemToNote()
-                3 -> runListMenu()
-                4 -> searchNotes()
-                5 -> updateNote()
-                6 -> archiveNote()
-                7 -> deleteNote()
-                8 -> save()
-                9 -> load()
-                10 -> addItem()
-                11 -> listAllItems()
-                12 -> itemReport()
-                13 -> searchItems()
+                3 -> viewItemsForNote()
+                4 -> runListMenu()
+                5 -> searchNotes()
+                6 -> updateNote()
+                7 -> archiveNote()
+                8 -> deleteNote()
+                9 -> save()
+                10 -> load()
+                11 -> addItem()
+                12 -> listAllItems()
+                13 -> itemReport()
+                14 -> searchItems()
                 0 -> println("Exiting App")
                 else -> println("Invalid Option")
             }
@@ -246,6 +248,14 @@ private val logger = KotlinLogging.logger {}
             }
         } else {
             println("Note not found")
+        }
+    }
+
+    fun viewItemsForNote() {
+        val id = readNextInt("Enter Note ID: ")
+        val itemIds = noteItemService.getItemIdsForNote(id)
+        if (itemIds.isNotEmpty()) {
+            itemIds.forEach { itemId -> println(itemService.findItemById(itemId)) }
         }
     }
 

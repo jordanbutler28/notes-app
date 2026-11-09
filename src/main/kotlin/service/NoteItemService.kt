@@ -13,4 +13,10 @@ class NoteItemService {
         noteItems.add(NoteItem(noteId, itemId))
         return true
     }
+
+    fun getItemIdsForNote(noteId: Int): List<Int> {
+        return noteItems
+            .filter { it.noteId == noteId }
+            .map { it.itemId }
+    }
 }
