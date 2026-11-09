@@ -44,7 +44,8 @@ private val logger = KotlinLogging.logger {}
         > | ITEM MENU                      |
         > |   10) Add item                 |
         > |   11) List all items           |
-        > |   12) Search items             |
+        > |   12) Item Report              |
+        > |   13) Search items             |
         > ----------------------------------    
         > |   0) Exit                      |
         > ----------------------------------
@@ -84,7 +85,8 @@ private val logger = KotlinLogging.logger {}
                 8 -> load()
                 10 -> addItem()
                 11 -> listAllItems()
-                12 -> searchItems()
+                12 -> itemReport()
+                13 -> searchItems()
                 0 -> println("Exiting App")
                 else -> println("Invalid Option")
             }
@@ -235,6 +237,21 @@ private val logger = KotlinLogging.logger {}
         } else {
             println("No items found")
         }
+    }
+
+    fun itemReport() {
+        val totalItems = itemService.numberOfItems()
+        val completeItems = itemService.numberOfCompletedItems()
+        val incompleteItems = itemService.numberOfIncompleteItems()
+        print("""
+        > --------------------------------------
+        > |        ITEM REPORT                 |
+        > --------------------------------------
+        > | ${"Total Items: $totalItems".padEnd(34)} |
+        > | ${"Completed Items: $completeItems".padEnd(34)} |
+        > | ${"Incomplete Items: $incompleteItems".padEnd(34)} |
+        > --------------------------------------
+        > """.trimMargin(">"))
     }
 
 //persistence

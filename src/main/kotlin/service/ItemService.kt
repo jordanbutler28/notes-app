@@ -24,4 +24,10 @@ class ItemService {
 
     fun searchItemsByContent(input: String): List<Item> = items.filter { it.description.contains(input, ignoreCase = true) }
 
+    fun numberOfItems(): Int = items.size
+
+    fun numberOfCompletedItems() = items.count { !it.isCompleted }
+
+    fun numberOfIncompleteItems() = items.count { it.isCompleted }
+
 }
