@@ -5,6 +5,7 @@ import model.Status
 import persistence.JSONSerializer
 import persistence.XMLSerializer
 import service.ItemService
+import service.NoteItemService
 import service.NoteService
 import utils.readNextBoolean
 import utils.readNextChar
@@ -19,6 +20,7 @@ import java.io.File
 //val noteService = NoteService(XMLSerializer(File("notes.xml")))
 val noteService = NoteService(JSONSerializer(File("notes.json")))
 val itemService = ItemService()
+val noteItemService = NoteItemService()
 private val logger = KotlinLogging.logger {}
 
     fun main() {
@@ -33,13 +35,14 @@ private val logger = KotlinLogging.logger {}
         > ----------------------------------
         > | NOTE MENU                      |
         > |   1) Add a note                |
-        > |   2) List notes                |
-        > |   3) Search notes              |
-        > |   4) Update a note             |
-        > |   5) Archive a note            |
-        > |   6) Delete a note             |
-        > |   7) Save notes                |
-        > |   8) Load notes                |
+        > |   2) Add item to note          |
+        > |   3) List notes                |
+        > |   4) Search notes              |
+        > |   5) Update a note             |
+        > |   6) Archive a note            |
+        > |   7) Delete a note             |
+        > |   8) Save notes                |
+        > |   9) Load notes                |
         > ----------------------------------
         > | ITEM MENU                      |
         > |   10) Add item                 |
@@ -76,13 +79,14 @@ private val logger = KotlinLogging.logger {}
             val input = mainMenu()
             when(input) {
                 1 -> addNote()
-                2 -> runListMenu()
-                3 -> searchNotes()
-                4 -> updateNote()
-                5 -> archiveNote()
-                6 -> deleteNote()
-                7 -> save()
-                8 -> load()
+                2 -> addItemToNote()
+                3 -> runListMenu()
+                4 -> searchNotes()
+                5 -> updateNote()
+                6 -> archiveNote()
+                7 -> deleteNote()
+                8 -> save()
+                9 -> load()
                 10 -> addItem()
                 11 -> listAllItems()
                 12 -> itemReport()
@@ -223,6 +227,26 @@ private val logger = KotlinLogging.logger {}
         itemService.addItem(
             Item(0, description, false)
         )
+    }
+
+    fun addItemToNote() {
+        val noteId = readNextInt("Enter Note ID: ")
+        if (noteService.findNoteById(noteId) != null) {
+            val itemId = readNextInt("Enter Item ID: ")
+            if (itemService.findItemById(itemId) != null) {
+                if (noteItemService.addItemToNote(noteId, itemId)){
+                    println("Added")
+                }
+                else{
+                    println("Item is already added to Note")
+                }
+            }
+            else{
+                println("Item not found")
+            }
+        } else {
+            println("Note not found")
+        }
     }
 
     fun listAllItems() {
