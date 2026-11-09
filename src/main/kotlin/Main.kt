@@ -1,8 +1,10 @@
 import io.github.oshai.kotlinlogging.KotlinLogging
+import model.Item
 import model.Note
 import model.Status
 import persistence.JSONSerializer
 import persistence.XMLSerializer
+import service.ItemService
 import service.NoteService
 import utils.readNextBoolean
 import utils.readNextChar
@@ -16,6 +18,7 @@ import java.io.File
 
 //val noteService = NoteService(XMLSerializer(File("notes.xml")))
 val noteService = NoteService(JSONSerializer(File("notes.json")))
+val itemService = ItemService()
 private val logger = KotlinLogging.logger {}
 
     fun main() {
@@ -38,6 +41,10 @@ private val logger = KotlinLogging.logger {}
         > |   7) Save notes                |
         > |   8) Load notes                |
         > ----------------------------------
+        > | ITEM MENU                      |
+        > |   10) Add item                 |
+        > |   11) List all items           |
+        > ----------------------------------    
         > |   0) Exit                      |
         > ----------------------------------
         > """.trimMargin(">"))
@@ -74,6 +81,8 @@ private val logger = KotlinLogging.logger {}
                 6 -> deleteNote()
                 7 -> save()
                 8 -> load()
+                10 -> addItem()
+                11 -> listAllItems()
                 0 -> println("Exiting App")
                 else -> println("Invalid Option")
             }
@@ -202,6 +211,18 @@ private val logger = KotlinLogging.logger {}
         } else {
             println("Note cannot be archived. Invalid ID or note already archived.")
         }
+    }
+
+//Items
+    fun addItem() {
+        val description = readNextLine("Description: ")
+        itemService.addItem(
+            Item(0, description, false)
+        )
+    }
+
+    fun listAllItems() {
+        itemService.getItems().forEach { print(it) }
     }
 
     fun save () {
