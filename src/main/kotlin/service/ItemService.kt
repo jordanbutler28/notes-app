@@ -2,8 +2,11 @@ package service
 
 import model.Item
 import model.Note
+import persistence.Serializer
 
-class ItemService {
+class ItemService (serializerType: Serializer) {
+
+    private var serializer: Serializer = serializerType
     private var items = ArrayList<Item>()
     private var lastId = 0
     private fun getId(): Int = lastId++
@@ -30,4 +33,12 @@ class ItemService {
 
     fun numberOfIncompleteItems() = items.count { it.isCompleted }
 
+    fun load() {
+        val array = serializer.read(Array<Item>::class.java)
+        items = array.toCollection(ArrayList())
+    }
+
+    fun store() {
+        serializer.write(items)
+    }
 }

@@ -1,8 +1,11 @@
 package service
 
 import model.NoteItem
+import persistence.Serializer
 
-class NoteItemService {
+class NoteItemService (serializerType: Serializer) {
+
+    private var serializer: Serializer = serializerType
     private var noteItems = ArrayList<NoteItem>()
 
     fun addItemToNote(noteId: Int, itemId: Int): Boolean {
@@ -18,5 +21,14 @@ class NoteItemService {
         return noteItems
             .filter { it.noteId == noteId }
             .map { it.itemId }
+    }
+
+    fun load() {
+        val array = serializer.read(Array<NoteItem>::class.java)
+        noteItems = array.toCollection(ArrayList())
+    }
+
+    fun store() {
+        serializer.write(noteItems)
     }
 }

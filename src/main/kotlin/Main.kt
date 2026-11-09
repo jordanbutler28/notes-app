@@ -19,8 +19,8 @@ import java.io.File
 
 //val noteService = NoteService(XMLSerializer(File("notes.xml")))
 val noteService = NoteService(JSONSerializer(File("notes.json")))
-val itemService = ItemService()
-val noteItemService = NoteItemService()
+val itemService = ItemService(JSONSerializer(File("items.json")))
+val noteItemService = NoteItemService(JSONSerializer(File("noteitems.json")))
 private val logger = KotlinLogging.logger {}
 
     fun main() {
@@ -43,7 +43,7 @@ private val logger = KotlinLogging.logger {}
         > |   7) Archive a note            |
         > |   8) Delete a note             |
         > |   9) Save notes                |
-        > |   10) Load notes                |
+        > |   10) Load notes               |
         > ----------------------------------
         > | ITEM MENU                      |
         > |   11) Add item                 |
@@ -293,6 +293,8 @@ private val logger = KotlinLogging.logger {}
     fun save () {
         try {
             noteService.store()
+            itemService.store()
+            noteItemService.store()
         } catch (e: Exception) {
             System.err.println("Error writing to file: $e")
         }
@@ -301,6 +303,8 @@ private val logger = KotlinLogging.logger {}
     fun load() {
         try {
             noteService.load()
+            itemService.load()
+            noteItemService.load()
         } catch (e: Exception) {
             System.err.println("Error reading from file: $e")
         }
