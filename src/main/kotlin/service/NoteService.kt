@@ -5,6 +5,13 @@ import model.Status
 import persistence.Serializer
 import kotlin.text.category
 
+/**
+ * This class manages a list of notes and provides functionality for adding, updating, deleting,
+ * and filtering notes. It uses a [Serializer] to load and store the notes persistently.
+ *
+ * @property serializer A serializer instance for reading and writing the notes.
+ * @constructor Initializes the NoteService with the specified [serializerType].
+ */
 class NoteService(serializerType: Serializer) {
 
     private var notes = ArrayList<Note>()
@@ -12,6 +19,12 @@ class NoteService(serializerType: Serializer) {
     private fun getId(): Int = lastId++
     private var serializer: Serializer = serializerType
 
+    /**
+     * Adds a new [Note] to the list.
+     *
+     * @param note The [Note] to be added.
+     * @return `true` if the note was successfully added, `false` otherwise.
+     */
     fun addNote(note: Note) {
         note.id = getId()
         note.isArchived = false
