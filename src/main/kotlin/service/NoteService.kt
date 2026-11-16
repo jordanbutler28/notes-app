@@ -12,11 +12,14 @@ import kotlin.text.category
  * @property serializer A serializer instance for reading and writing the notes.
  * @constructor Initializes the NoteService with the specified [serializerType].
  */
-class NoteService(serializerType: Serializer) {
-
+class NoteService(
+    serializerType: Serializer,
+) {
     private var notes = ArrayList<Note>()
     private var lastId = 0
+
     private fun getId(): Int = lastId++
+
     private var serializer: Serializer = serializerType
 
     /**
@@ -33,9 +36,7 @@ class NoteService(serializerType: Serializer) {
         notes.add(note)
     }
 
-    fun getNotes(): List<Note> {
-        return notes
-    }
+    fun getNotes(): List<Note> = notes
 
     fun getActiveNotes(): List<Note> = notes.filter { !it.isArchived }
 
@@ -45,11 +46,12 @@ class NoteService(serializerType: Serializer) {
 
     fun getNotesByPriority(priority: Int): List<Note> = notes.filter { it.priority == priority }
 
-    fun deleteNote(id: Int): Boolean {
-        return notes.removeIf { it.id == id }
-    }
+    fun deleteNote(id: Int): Boolean = notes.removeIf { it.id == id }
 
-    fun updateNote(id: Int, updated: Note): Boolean {
+    fun updateNote(
+        id: Int,
+        updated: Note,
+    ): Boolean {
         val index = notes.indexOfFirst { it.id == id }
         if (index != -1) {
             val oldNote = notes[index]
@@ -61,25 +63,25 @@ class NoteService(serializerType: Serializer) {
         return false
     }
 
-    fun findNoteById(id: Int): Note? {
-        return notes.find { it.id == id }
-    }
+    fun findNoteById(id: Int): Note? = notes.find { it.id == id }
 
-    fun searchNotesByContent(input: String): List<Note> = notes.filter { it.title.contains(input, ignoreCase = true) || it.body.contains(input, ignoreCase = true) }
+    fun searchNotesByContent(input: String): List<Note> =
+        notes.filter {
+            it.title.contains(input, ignoreCase = true) ||
+                it.body.contains(input, ignoreCase = true)
+        }
 
     fun archiveNote(id: Int): Boolean {
         val note = notes.find { it.id == id && !it.isArchived }
 
-       if (note != null) {
-           note.isArchived = true
-           return true
-       }
+        if (note != null) {
+            note.isArchived = true
+            return true
+        }
         return false
     }
 
-    fun numberOfNotes(): Int {
-        return notes.size
-    }
+    fun numberOfNotes(): Int = notes.size
 
     fun numberOfArchivedNotes() = notes.count { note: Note -> note.isArchived }
 
@@ -105,6 +107,4 @@ class NoteService(serializerType: Serializer) {
     fun store() {
         serializer.write(notes)
     }
-
 }
-

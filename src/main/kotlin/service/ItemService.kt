@@ -1,14 +1,15 @@
 package service
 
 import model.Item
-import model.Note
 import persistence.Serializer
 
-class ItemService (serializerType: Serializer) {
-
+class ItemService(
+    serializerType: Serializer,
+) {
     private var serializer: Serializer = serializerType
     private var items = ArrayList<Item>()
     private var lastId = 0
+
     private fun getId(): Int = lastId++
 
     fun addItem(item: Item) {
@@ -17,13 +18,9 @@ class ItemService (serializerType: Serializer) {
         items.add(item)
     }
 
-    fun getItems(): List<Item> {
-        return items
-    }
+    fun getItems(): List<Item> = items
 
-    fun findItemById(id: Int): Item? {
-        return items.find { it.id == id }
-    }
+    fun findItemById(id: Int): Item? = items.find { it.id == id }
 
     fun searchItemsByContent(input: String): List<Item> = items.filter { it.description.contains(input, ignoreCase = true) }
 
