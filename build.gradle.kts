@@ -1,9 +1,15 @@
 plugins {
     kotlin("jvm") version "2.4.10"
+    // Plugin for Dokka - KDoc generating tool
+    id("org.jetbrains.dokka") version "2.2.0"
+    jacoco
+    // Plugin for Ktlint
+    id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
+    application
 }
 
 group = "ie.setu"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 repositories {
     mavenCentral()
@@ -15,10 +21,12 @@ dependencies {
     implementation("io.github.oshai:kotlin-logging-jvm:8.0.4")
     // Source: https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
     implementation("org.slf4j:slf4j-simple:2.0.18")
-    //For streaming XML and JSON objects to files
+    // For streaming XML and JSON objects to files
     implementation("tools.jackson.core:jackson-databind:3.1.4")
     implementation("tools.jackson.module:jackson-module-kotlin:3.1.4")
     implementation("tools.jackson.dataformat:jackson-dataformat-xml:3.1.4")
+    // For generating a Dokka Site from KDoc
+    implementation("org.jetbrains.dokka:dokka-gradle-plugin:2.2.0")
 }
 
 kotlin {
@@ -27,4 +35,26 @@ kotlin {
 
 tasks.test {
     useJUnitPlatform()
+    // report is always generated after tests run
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+ktlint {
+    version.set("1.8.0")
+}
+
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = "MainKt"
+    }
+    // for building a fat jar - include all dependencies
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(sourceSets.main.get().output)
+    dependsOn(configurations.runtimeClasspath)
+    from({
+        configurations.runtimeClasspath
+            .get()
+            .filter { it.name.endsWith("jar") }
+            .map { zipTree(it) }
+    })
 }
